@@ -1,12 +1,10 @@
 package main
 
 import (
-	"fmt"
-
+	_ "pastevault.com/internal/db"
 	"pastevault.com/internal/router"
 )
 
 func main() {
-	fmt.Println("Hello, World!")
 	router.Router()
 }
