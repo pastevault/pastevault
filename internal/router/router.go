@@ -2,16 +2,29 @@ package router
 
 import (
 	"net/http"
+	"pastevault.com/internal/paste"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Router() {
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
+
+	// API Version 1
+	v1 := r.Group("/v1")
+
+	// Check if the server is up
+	v1.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
 	})
-	r.Run()
+
+	// Create a new paste
+	v1.POST("/paste", paste.NewPasteHandler)
+
+	// Run the server
+	if err := r.Run(); err != nil {
+		panic(err)
+	}
 }
