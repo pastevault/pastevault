@@ -2,10 +2,11 @@ package main
 
 import (
 	"fmt"
-	"time"
+
+	"pastevault.com/internal/router"
 )
 
 func main() {
 	fmt.Println("Hello, World!")
-	time.Sleep(100 * time.Second)
+	router.Router()
 }
