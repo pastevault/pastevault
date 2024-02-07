@@ -1,8 +1,10 @@
+#!/bin/sh
+
 # Run Go server
 ./main &
 
 # Run SvelteKit server
-node ui/build/index.js &
+cd ./ui/build && node index.js &
 
 # Wait for any process to exit
 wait -n
