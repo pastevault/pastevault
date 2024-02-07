@@ -11,7 +11,8 @@ import (
 type Paste struct {
 	UUID       string
 	Expiration string `form:"expiration" json:"expiration"`
-	Content    string `form:"content" json:"content" binding:"required"`
+	Content    string `json:"content" binding:"required"`
+	Encrypted  bool   `json:"encrypted" gorm:"default:false"`
 }
 
 func init() {
@@ -22,7 +23,7 @@ func init() {
 
 func NewPasteHandler(c *gin.Context) {
 	var p Paste
-	if err := c.ShouldBind(&p); err != nil {
+	if err := c.ShouldBindJSON(&p); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
