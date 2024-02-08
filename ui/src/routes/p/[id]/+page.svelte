@@ -7,7 +7,14 @@
 
 	dayjs.extend(relativeTime)
 
-	let expires_in = dayjs(data.paste.expiration).fromNow()
+	let expires_in: string;
+	const expirationDifference = dayjs(data.paste.expiration).diff(dayjs(), 'minutes');
+
+	if (expirationDifference < 10) {
+		expires_in = "soon";
+	} else {
+		expires_in = dayjs(data.paste.expiration).fromNow();
+	}
 </script>
 
 <div>
