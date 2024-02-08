@@ -1,7 +1,7 @@
 import type { Actions, PageServerLoad } from './$types';
 import { z } from 'zod';
-import { message, superValidate } from 'sveltekit-superforms/server';
-import { fail } from '@sveltejs/kit';
+import { superValidate } from 'sveltekit-superforms/server';
+import { fail, redirect } from '@sveltejs/kit';
 
 const schema = z.object({
 	content: z.string(),
@@ -46,6 +46,6 @@ export const actions: Actions = {
 		}
 
 		const json = await response.json() as Response;
-		return message(form, `${json.uuid}`);
+		return redirect(303, `/p/${json.uuid}`);
 	}
 };
