@@ -20,6 +20,9 @@ func Router() {
 		})
 	})
 
+	// Get a paste
+	v1.GET("/paste/:uuid", paste.GetPasteHandler)
+
 	// Create a new paste
 	v1.POST("/paste", paste.NewPasteHandler)
 
