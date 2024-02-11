@@ -6,7 +6,7 @@
 
 	export let data: PageData;
 
-	const { form, errors, constraints, message } = superForm(data.form);
+	const { form, errors, constraints, message, enhance } = superForm(data.form);
 </script>
 
 
@@ -14,7 +14,7 @@
 
 {#if $message}<h3>{$message}</h3>{/if}
 
-<form method="POST">
+<form method="POST" use:enhance>
 	<label for="content">Content</label>
 	{#if $errors.content}<span class="invalid">{$errors.content}</span>{/if}
 	<input
