@@ -46,7 +46,8 @@ func NewPasteHandler(c *gin.Context) {
 	}
 
 	p := Paste{
-		Content: r.Content,
+		Content:   r.Content,
+		Encrypted: r.Encrypted,
 	}
 
 	//	Generate a UUID for the paste
