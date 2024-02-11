@@ -2,11 +2,33 @@
 	import type { PageData } from './$types';
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
+	import {encryptPaste} from '$lib/encryption/encrypt';
 
 
 	export let data: PageData;
+	let paste: string;
 
-	const { form, errors, constraints, message, enhance } = superForm(data.form);
+	const { form, errors, constraints, message, enhance } = superForm(data.form, {
+		onSubmit: async (form) => {
+			if (form.formData.get('encrypted') === 'on') {
+				const password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+				const content = form.formData.get('content') as string;
+				paste = content;
+				const encryptedContent = await encryptPaste(content, password);
+
+				form.formData.set('content', btoa(encryptedContent.iv + encryptedContent.encrypted));
+			}
+		},
+		onResult: async ({ result }) => {
+			if (result.type === 'failure') {
+				if ($form.encrypted) {
+					if (result.data) {
+						result.data.form.data.content = paste;
+					}
+				}
+			}
+		}
+	});
 </script>
 
 
@@ -30,6 +52,12 @@
 		aria-invalid={$errors.expiration ? 'true' : undefined}
 		bind:value={$form.expiration}
 		{...$constraints.expiration} />
+
+	<label for="encrypted">Encrypted</label>
+	<input
+		type="checkbox" name="encrypted"
+		bind:checked={$form.encrypted}
+		{...$constraints.encrypted} />
 
 	<div>
 		<button>Submit</button>

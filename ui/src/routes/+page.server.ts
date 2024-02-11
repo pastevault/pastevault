@@ -6,7 +6,7 @@ import { fail, redirect } from '@sveltejs/kit';
 const schema = z.object({
 	content: z.string(),
 	expiration: z.enum(['1h', '1d', '1w', '1m', '1y']),
-	encrypted: z.boolean().default(false)
+	encrypted: z.boolean().default(false).optional()
 });
 
 export const load: PageServerLoad = async () => {
