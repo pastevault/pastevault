@@ -9,6 +9,7 @@
 	export let data: PageData;
 	let paste: string;
 	let disabled = true;
+	let password: string;
 
 	onMount(() => {
 		disabled = false;
@@ -17,7 +18,7 @@
 	const { form, errors, constraints, message, enhance } = superForm(data.form, {
 		onSubmit: async (form) => {
 			if (form.formData.get('encrypted') === 'on') {
-				const password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+				password = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 				const content = form.formData.get('content') as string;
 				paste = content;
 				const encryptedContent = await encryptPaste(content, password);
@@ -32,6 +33,10 @@
 						result.data.form.data.content = paste;
 					}
 				}
+			} else if (result.type === 'redirect') {
+			   if ($form.encrypted) {
+					 window.location.href = result.location + `#${password}`;
+				 }
 			}
 		}
 	});
