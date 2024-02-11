@@ -36,6 +36,6 @@ COPY --from=frontend /app/build /app/package.json ./ui/build/
 
 EXPOSE 8080
 
-EXPOSE 8081
+EXPOSE 3000
 
 CMD ["./entrypoint.sh"]
