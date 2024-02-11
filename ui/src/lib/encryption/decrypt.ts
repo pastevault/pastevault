@@ -7,9 +7,13 @@ export async function decryptPaste(paste: string, password: string) {
 	const key = await crypto.subtle.importKey('raw', passwordHash, {
 		name: 'AES-GCM'
 	}, false, ['decrypt']);
-	const decrypted = await crypto.subtle.decrypt({
-		name: 'AES-GCM',
-		iv
-	}, key, encrypted);
-	return new TextDecoder().decode(decrypted);
+	try {
+		const decrypted = await crypto.subtle.decrypt({
+			name: 'AES-GCM',
+			iv
+		}, key, encrypted);
+		return new TextDecoder().decode(decrypted);
+	} catch (e) {
+		return "";
+	}
 }
