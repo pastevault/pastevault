@@ -2,11 +2,17 @@
 	import type { PageData } from './$types';
 	import { superForm } from 'sveltekit-superforms/client';
 	import SuperDebug from 'sveltekit-superforms/client/SuperDebug.svelte';
-	import {encryptPaste} from '$lib/encryption/encrypt';
+	import { encryptPaste } from '$lib/encryption/encrypt';
+	import { onMount } from 'svelte';
 
 
 	export let data: PageData;
 	let paste: string;
+	let disabled = true;
+
+	onMount(() => {
+		disabled = false;
+	});
 
 	const { form, errors, constraints, message, enhance } = superForm(data.form, {
 		onSubmit: async (form) => {
@@ -53,11 +59,14 @@
 		bind:value={$form.expiration}
 		{...$constraints.expiration} />
 
-	<label for="encrypted">Encrypted</label>
+	<label for="encrypted">
+		Encrypted {#if disabled} (disabled: js required) {/if}
+	</label>
 	<input
 		type="checkbox" name="encrypted"
 		bind:checked={$form.encrypted}
-		{...$constraints.encrypted} />
+		{...$constraints.encrypted}
+		disabled={disabled} />
 
 	<div>
 		<button>Submit</button>
