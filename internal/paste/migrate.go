@@ -1,9 +1,12 @@
 package paste
 
-import "pastevault.com/internal/db"
+import (
+	"pastevault.com/internal/db"
+	pb "pastevault.com/internal/proto"
+)
 
 func Migrate() error {
-	if err := db.DB.AutoMigrate(&Paste{}); err != nil {
+	if err := db.DB.AutoMigrate(&pb.Paste{}); err != nil {
 		return err
 	}
 
