@@ -60,6 +60,7 @@
 		</form>
 		{:else}
 		{data.paste.content}
+		<a href="http://localhost:8080/v1/paste/{data.paste.uuid}/raw">Raw</a>
 	{/if}
 
 	<div>

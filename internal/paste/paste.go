@@ -38,6 +38,18 @@ func GetPasteHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"uuid": p.UUID, "expiration": p.Expiration, "content": p.Content, "encrypted": p.Encrypted})
 }
 
+func GetRawPasteHandler(c *gin.Context) {
+	id := c.Param("uuid")
+	var p Paste
+	if err := db.DB.Where("uuid = ?", id).First(&p).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Paste not found"})
+		return
+	}
+
+	c.String(http.StatusOK, p.Content)
+
+}
+
 func NewPasteHandler(c *gin.Context) {
 	var r pasteRequest
 	if err := c.ShouldBindJSON(&r); err != nil {
