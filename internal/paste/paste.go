@@ -11,19 +11,6 @@ import (
 	"time"
 )
 
-type Paste struct {
-	Id         string
-	Expiration time.Time
-	Content    string
-	Encrypted  bool `gorm:"default:false"`
-}
-
-type pasteRequest struct {
-	Expiration string `json:"expiration"`
-	Content    string `json:"content" binding:"required"`
-	Encrypted  bool   `json:"encrypted"`
-}
-
 func generateId(n int) string {
 	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 
@@ -85,7 +72,7 @@ func CreatePaste(p *pb.PasteRequest) (*pb.Paste, error) {
 
 func GetRawPasteHandler(c *gin.Context) {
 	id := c.Param("id")
-	var p Paste
+	var p pb.Paste
 	if err := db.DB.Where("id = ?", id).First(&p).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Paste not found"})
 		return
