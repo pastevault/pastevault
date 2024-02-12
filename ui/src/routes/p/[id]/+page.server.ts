@@ -1,5 +1,9 @@
 import type { PageServerLoad } from './$types';
-import { error, type NumericRange } from '@sveltejs/kit';
+import { server } from '$lib/server/grpc';
+import { Metadata } from '@grpc/grpc-js';
+import { grpcSafe } from '$lib/safe';
+import type { Safe } from '$lib/safe';
+import type { Paste__Output } from '$lib/proto/proto/Paste';
 
 export type Paste = {
 	content: string;
@@ -9,16 +13,18 @@ export type Paste = {
 };
 
 
-export const load: PageServerLoad = async ({ params, fetch }) => {
-	const response = await fetch(`http://localhost:8080/v1/paste/${params.id}`);
+export const load: PageServerLoad = async ({ params }) => {
+	const { id } = params;
+	if (!id) return { status: 400, body: 'Missing Paste ID' };
 
-	if (!response.ok) {
-		throw error(response.status as NumericRange<400, 599>, 'Failed to load paste');
-	}
+	const req: Safe<Paste__Output> = await new Promise((r) => {
+		const metadata = new Metadata();
+		server.getPasteById({ id }, metadata, grpcSafe(r));
+	});
 
-	const paste = await response.json() as Paste;
+	if (req.error) return { status: 404, body: req.msg };
 
 	return {
-		paste
-	};
+		paste: req.data,
+	}
 };

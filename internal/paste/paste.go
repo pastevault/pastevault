@@ -1,6 +1,7 @@
 package paste
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"math/rand"
@@ -43,26 +44,44 @@ func GetPasteById(id string) (*pb.Paste, error) {
 	}
 
 	Logger.Info("GetPasteById", "time", time.Since(start))
+	fmt.Println(p)
 	return p, nil
 }
 
-func CreatePaste(p *pb.PasteRequest) error {
+func CreatePaste(p *pb.PasteRequest) (*pb.Paste, error) {
 	start := time.Now()
 	paste := &pb.Paste{
-		Expiration: p.Expiration,
-		Content:    p.Content,
-		Encrypted:  p.Encrypted,
+		Content:   p.Content,
+		Encrypted: p.Encrypted,
 	}
 
 	paste.Id = generateId(8)
 
+	now := time.Now()
+	switch p.Expiration {
+	case "5m":
+		paste.Expiration = now.Add(time.Minute * 5).Format(time.RFC3339)
+	case "1h":
+		paste.Expiration = now.Add(time.Hour).Format(time.RFC3339)
+	case "1d":
+		paste.Expiration = now.Add(time.Hour * 24).Format(time.RFC3339)
+	case "1w":
+		paste.Expiration = now.Add(time.Hour * 24 * 7).Format(time.RFC3339)
+	case "1m":
+		paste.Expiration = now.Add(time.Hour * 24 * 30).Format(time.RFC3339)
+	case "1y":
+		paste.Expiration = now.Add(time.Hour * 24 * 365).Format(time.RFC3339)
+	default:
+		paste.Expiration = now.Add(time.Hour * 24).Format(time.RFC3339)
+	}
+
 	if err := db.DB.Create(&paste).Error; err != nil {
 		Logger.Error("Error creating paste: ", "paste.CreatePaste", err)
-		return err
+		return nil, err
 	}
 
 	Logger.Info("CreatePaste", "time", time.Since(start))
-	return nil
+	return paste, nil
 }
 
 func GetPasteHandler(c *gin.Context) {
@@ -73,7 +92,7 @@ func GetPasteHandler(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"uuid": p.UUID, "expiration": p.Expiration, "content": p.Content, "encrypted": p.Encrypted})
+	c.JSON(http.StatusOK, gin.H{"uuid": p.Id, "expiration": p.Expiration, "content": p.Content, "encrypted": p.Encrypted})
 }
 
 func GetRawPasteHandler(c *gin.Context) {
@@ -101,7 +120,7 @@ func NewPasteHandler(c *gin.Context) {
 	}
 
 	//	Generate a UUID for the paste
-	p.UUID = uuid.New().String()
+	p.Id = uuid.New().String()
 
 	//	Set the expiration date
 	now := time.Now()
@@ -126,5 +145,5 @@ func NewPasteHandler(c *gin.Context) {
 	db.DB.Create(&p)
 
 	//	Return the UUID of the paste
-	c.JSON(201, gin.H{"uuid": p.UUID, "expiration": p.Expiration})
+	c.JSON(201, gin.H{"id": p.Id, "expiration": p.Expiration})
 }
