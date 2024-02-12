@@ -2,9 +2,8 @@ import type { Actions, PageServerLoad } from './$types';
 import { z } from 'zod';
 import { superValidate } from 'sveltekit-superforms/server';
 import { fail, redirect } from '@sveltejs/kit';
-import { grpcSafe, type Safe } from '$lib/safe';
 import type { Paste__Output } from '$lib/proto/proto/Paste';
-import { Metadata } from '@grpc/grpc-js';
+import { Metadata, type ServiceError } from '@grpc/grpc-js';
 import { server } from '$lib/server/grpc';
 import type { PasteRequest } from '$lib/proto/proto/PasteRequest';
 
@@ -38,18 +37,20 @@ export const actions: Actions = {
 			expiration: form.data.expiration
 		};
 
-		const req: Safe<Paste__Output> = await new Promise((r) => {
+		const pasteResult: Paste__Output | ServiceError = await new Promise((r) => {
 			const metadata = new Metadata();
-			server.CreatePaste(paste, metadata, grpcSafe(r));
+			server.createPaste(paste, metadata, (err, data) => {
+				if (err) {
+					r(err);
+				}
+				r(data as Paste__Output);
+			});
 		});
 
-		if (req.error) {
-			if (req.fields) {
-				return fail(400, { form: { ...form, errors: req.fields } });
-			}
-			return fail(500, { message: req.msg });
+		if (pasteResult instanceof Error) {
+			return fail(500, { form });
 		}
 
-		return redirect(303, `/p/${req.data.id}`);
+		return redirect(303, `/p/${pasteResult.id}`);
 	}
 };

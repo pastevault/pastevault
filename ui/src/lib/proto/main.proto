@@ -10,7 +10,7 @@ message Id {
   string id = 1;
 }
 
-service Service {
+service PasteService {
   rpc GetPasteById(Id) returns (Paste) {}
   rpc CreatePaste(PasteRequest) returns (Paste) {}
 }
