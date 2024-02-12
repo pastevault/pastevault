@@ -9,10 +9,12 @@ import (
 var DB *gorm.DB
 
 // Connect connects to the database
-func init() {
+func Connect() error {
 	var err error
 	DB, err = gorm.Open(sqlite.Open("./pastes.db"), &gorm.Config{})
 	if err != nil {
-		panic("failed to connect database")
+		return err
 	}
+
+	return nil
 }

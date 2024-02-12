@@ -2,13 +2,17 @@ package router
 
 import (
 	"net/http"
+	"pastevault.com/internal/logger"
 	"pastevault.com/internal/paste"
 
 	"github.com/gin-gonic/gin"
+	sloggin "github.com/samber/slog-gin"
 )
 
 func Router() {
-	r := gin.Default()
+	r := gin.New()
+	r.Use(sloggin.New(logger.Logger))
+	r.Use(gin.Recovery())
 
 	// API Version 1
 	v1 := r.Group("/v1")

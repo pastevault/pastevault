@@ -3,13 +3,16 @@ package paste
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"math/rand"
 	"net/http"
 	"pastevault.com/internal/db"
+	. "pastevault.com/internal/logger"
+	pb "pastevault.com/internal/proto"
 	"time"
 )
 
 type Paste struct {
-	UUID       string
+	Id         string
 	Expiration time.Time
 	Content    string
 	Encrypted  bool `gorm:"default:false"`
@@ -21,10 +24,45 @@ type pasteRequest struct {
 	Encrypted  bool   `json:"encrypted"`
 }
 
-func init() {
-	if err := db.DB.AutoMigrate(&Paste{}); err != nil {
-		panic(err)
+func generateId(n int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+
+	s := make([]rune, n)
+	for i := range s {
+		s[i] = letters[rand.Intn(len(letters))]
 	}
+	return string(s)
+}
+
+func GetPasteById(id string) (*pb.Paste, error) {
+	start := time.Now()
+	var p *pb.Paste
+	if err := db.DB.Where("id = ?", id).First(&p).Error; err != nil {
+		Logger.Error("Error getting paste by id: ", "paste.GetPasteById", err)
+		return nil, err
+	}
+
+	Logger.Info("GetPasteById", "time", time.Since(start))
+	return p, nil
+}
+
+func CreatePaste(p *pb.PasteRequest) error {
+	start := time.Now()
+	paste := &pb.Paste{
+		Expiration: p.Expiration,
+		Content:    p.Content,
+		Encrypted:  p.Encrypted,
+	}
+
+	paste.Id = generateId(8)
+
+	if err := db.DB.Create(&paste).Error; err != nil {
+		Logger.Error("Error creating paste: ", "paste.CreatePaste", err)
+		return err
+	}
+
+	Logger.Info("CreatePaste", "time", time.Since(start))
+	return nil
 }
 
 func GetPasteHandler(c *gin.Context) {
