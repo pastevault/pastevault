@@ -8,7 +8,9 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o main ./cmd/server
+ENV GIN_MODE=release
+
+RUN go build -o pastevault ./cmd/server
 
 FROM oven/bun:1 as frontend
 
@@ -22,20 +24,24 @@ COPY ui .
 
 RUN bun run build
 
-FROM alpine:3.19
+FROM debian:12-slim
 
-RUN apk add --no-cache nodejs
+RUN apt update
+
+RUN apt install -y nodejs
 
 WORKDIR /app
 
 COPY .docker/entrypoint.sh ./
 
-COPY --from=backend /app/main ./
+COPY --from=backend /app/pastevault ./
 
 COPY --from=frontend /app/build /app/package.json ./ui/build/
 
 EXPOSE 8080
 
 EXPOSE 3000
+
+ENV ORIGIN=http://localhost:3000
 
 CMD ["./entrypoint.sh"]
