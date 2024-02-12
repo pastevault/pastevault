@@ -1,7 +1,7 @@
 import type * as grpc from '@grpc/grpc-js';
 import type { MessageTypeDefinition } from '@grpc/proto-loader';
 
-import type { ServiceClient as _proto_ServiceClient, ServiceDefinition as _proto_ServiceDefinition } from './proto/Service';
+import type { PasteServiceClient as _proto_PasteServiceClient, PasteServiceDefinition as _proto_PasteServiceDefinition } from './proto/PasteService';
 
 type SubtypeConstructor<Constructor extends new (...args: any) => any, Subtype> = {
   new(...args: ConstructorParameters<Constructor>): Subtype;
@@ -12,7 +12,7 @@ export interface ProtoGrpcType {
     Id: MessageTypeDefinition
     Paste: MessageTypeDefinition
     PasteRequest: MessageTypeDefinition
-    Service: SubtypeConstructor<typeof grpc.Client, _proto_ServiceClient> & { service: _proto_ServiceDefinition }
+    PasteService: SubtypeConstructor<typeof grpc.Client, _proto_PasteServiceClient> & { service: _proto_PasteServiceDefinition }
   }
 }
 

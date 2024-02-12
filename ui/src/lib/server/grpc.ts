@@ -22,4 +22,4 @@ const cr =
 		? credentials.createSsl()
 		: credentials.createInsecure();
 
-export const server =  new proto.proto.Service(SERVER_GRPC, cr);
+export const server =  new proto.proto.PasteService(SERVER_GRPC, cr);

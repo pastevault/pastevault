@@ -13,7 +13,7 @@ import (
 )
 
 type server struct {
-	pb.UnimplementedServiceServer
+	pb.UnimplementedPasteServiceServer
 }
 
 func main() {
@@ -40,7 +40,7 @@ func main() {
 
 	s := grpc.NewServer()
 
-	pb.RegisterServiceServer(s, &server{})
+	pb.RegisterPasteServiceServer(s, &server{})
 	go func() {
 		Logger.Info("gRPC server listening on", "port", "8081")
 		if err := s.Serve(lis); err != nil {

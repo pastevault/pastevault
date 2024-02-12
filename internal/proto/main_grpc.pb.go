@@ -19,126 +19,126 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Service_GetPasteById_FullMethodName = "/proto.Service/GetPasteById"
-	Service_CreatePaste_FullMethodName  = "/proto.Service/CreatePaste"
+	PasteService_GetPasteById_FullMethodName = "/proto.PasteService/GetPasteById"
+	PasteService_CreatePaste_FullMethodName  = "/proto.PasteService/CreatePaste"
 )
 
-// ServiceClient is the client API for Service service.
+// PasteServiceClient is the client API for PasteService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type ServiceClient interface {
+type PasteServiceClient interface {
 	GetPasteById(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Paste, error)
 	CreatePaste(ctx context.Context, in *PasteRequest, opts ...grpc.CallOption) (*Paste, error)
 }
 
-type serviceClient struct {
+type pasteServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewServiceClient(cc grpc.ClientConnInterface) ServiceClient {
-	return &serviceClient{cc}
+func NewPasteServiceClient(cc grpc.ClientConnInterface) PasteServiceClient {
+	return &pasteServiceClient{cc}
 }
 
-func (c *serviceClient) GetPasteById(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Paste, error) {
+func (c *pasteServiceClient) GetPasteById(ctx context.Context, in *Id, opts ...grpc.CallOption) (*Paste, error) {
 	out := new(Paste)
-	err := c.cc.Invoke(ctx, Service_GetPasteById_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, PasteService_GetPasteById_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *serviceClient) CreatePaste(ctx context.Context, in *PasteRequest, opts ...grpc.CallOption) (*Paste, error) {
+func (c *pasteServiceClient) CreatePaste(ctx context.Context, in *PasteRequest, opts ...grpc.CallOption) (*Paste, error) {
 	out := new(Paste)
-	err := c.cc.Invoke(ctx, Service_CreatePaste_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, PasteService_CreatePaste_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// ServiceServer is the server API for Service service.
-// All implementations must embed UnimplementedServiceServer
+// PasteServiceServer is the server API for PasteService service.
+// All implementations must embed UnimplementedPasteServiceServer
 // for forward compatibility
-type ServiceServer interface {
+type PasteServiceServer interface {
 	GetPasteById(context.Context, *Id) (*Paste, error)
 	CreatePaste(context.Context, *PasteRequest) (*Paste, error)
-	mustEmbedUnimplementedServiceServer()
+	mustEmbedUnimplementedPasteServiceServer()
 }
 
-// UnimplementedServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedServiceServer struct {
+// UnimplementedPasteServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedPasteServiceServer struct {
 }
 
-func (UnimplementedServiceServer) GetPasteById(context.Context, *Id) (*Paste, error) {
+func (UnimplementedPasteServiceServer) GetPasteById(context.Context, *Id) (*Paste, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPasteById not implemented")
 }
-func (UnimplementedServiceServer) CreatePaste(context.Context, *PasteRequest) (*Paste, error) {
+func (UnimplementedPasteServiceServer) CreatePaste(context.Context, *PasteRequest) (*Paste, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePaste not implemented")
 }
-func (UnimplementedServiceServer) mustEmbedUnimplementedServiceServer() {}
+func (UnimplementedPasteServiceServer) mustEmbedUnimplementedPasteServiceServer() {}
 
-// UnsafeServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to ServiceServer will
+// UnsafePasteServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PasteServiceServer will
 // result in compilation errors.
-type UnsafeServiceServer interface {
-	mustEmbedUnimplementedServiceServer()
+type UnsafePasteServiceServer interface {
+	mustEmbedUnimplementedPasteServiceServer()
 }
 
-func RegisterServiceServer(s grpc.ServiceRegistrar, srv ServiceServer) {
-	s.RegisterService(&Service_ServiceDesc, srv)
+func RegisterPasteServiceServer(s grpc.ServiceRegistrar, srv PasteServiceServer) {
+	s.RegisterService(&PasteService_ServiceDesc, srv)
 }
 
-func _Service_GetPasteById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PasteService_GetPasteById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Id)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ServiceServer).GetPasteById(ctx, in)
+		return srv.(PasteServiceServer).GetPasteById(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Service_GetPasteById_FullMethodName,
+		FullMethod: PasteService_GetPasteById_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).GetPasteById(ctx, req.(*Id))
+		return srv.(PasteServiceServer).GetPasteById(ctx, req.(*Id))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Service_CreatePaste_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _PasteService_CreatePaste_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(PasteRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ServiceServer).CreatePaste(ctx, in)
+		return srv.(PasteServiceServer).CreatePaste(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Service_CreatePaste_FullMethodName,
+		FullMethod: PasteService_CreatePaste_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ServiceServer).CreatePaste(ctx, req.(*PasteRequest))
+		return srv.(PasteServiceServer).CreatePaste(ctx, req.(*PasteRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Service_ServiceDesc is the grpc.ServiceDesc for Service service.
+// PasteService_ServiceDesc is the grpc.ServiceDesc for PasteService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Service_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.Service",
-	HandlerType: (*ServiceServer)(nil),
+var PasteService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "proto.PasteService",
+	HandlerType: (*PasteServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetPasteById",
-			Handler:    _Service_GetPasteById_Handler,
+			Handler:    _PasteService_GetPasteById_Handler,
 		},
 		{
 			MethodName: "CreatePaste",
-			Handler:    _Service_CreatePaste_Handler,
+			Handler:    _PasteService_CreatePaste_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
