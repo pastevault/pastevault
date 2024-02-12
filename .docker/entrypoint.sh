@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 # Run Go server
-./main &
+./pastevault &
 
 # Run SvelteKit server
 cd ./ui/build && node index.js &
