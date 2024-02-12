@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "pastevault.com/internal/proto";
+
+message PasteRequest {
+  string content = 1;
+  string expiration = 2;
+  bool encrypted = 3;
+}
+
+message Paste {
+  string id = 1;
+  string content = 2;
+  string expiration = 3;
+  bool encrypted = 4;
+}

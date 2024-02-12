@@ -4,29 +4,31 @@
 	import relativeTime from 'dayjs/plugin/relativeTime';
 	import { onMount } from 'svelte';
 	import { decryptPaste } from '$lib/encryption/decrypt';
+	import type { Paste__Output } from '$lib/proto/proto/Paste';
 
 	export let data: PageData;
+	let paste = data.paste as Paste__Output;
 	let passwordNeeded = false;
 	let password: string;
 
 	dayjs.extend(relativeTime);
 
 	let expires_in: string;
-	const expirationDifference = dayjs(data.paste.expiration).diff(dayjs(), 'minutes');
+	const expirationDifference = dayjs(paste.expiration).diff(dayjs(), 'minutes');
 
 	if (expirationDifference < 10) {
 		expires_in = 'soon';
 	} else {
-		expires_in = dayjs(data.paste.expiration).fromNow();
+		expires_in = dayjs(paste.expiration).fromNow();
 	}
 
 	async function decrypt() {
 		password = window.location.hash.substring(1);
 		if (password) {
-			let decrypted = await decryptPaste(data.paste.content, password);
+			let decrypted = await decryptPaste(paste.content, password);
 			console.log(decrypted);
 			if (decrypted.length > 0) {
-				data.paste.content = decrypted;
+				paste.content = decrypted;
 			} else {
 				passwordNeeded = true;
 			}
@@ -42,7 +44,7 @@
 	}
 
 	onMount(async () => {
-		if (data.paste.encrypted) {
+		if (paste.encrypted) {
 			await decrypt();
 		}
 	});
@@ -59,8 +61,8 @@
 			<button type="submit">Decrypt</button>
 		</form>
 		{:else}
-		{data.paste.content}
-		<a href="http://localhost:8080/v1/paste/{data.paste.uuid}/raw">Raw</a>
+		{paste.content}
+		<a href="http://localhost:8080/v1/paste/{paste.id}/raw">Raw</a>
 	{/if}
 
 	<div>

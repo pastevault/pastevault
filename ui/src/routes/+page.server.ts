@@ -2,6 +2,11 @@ import type { Actions, PageServerLoad } from './$types';
 import { z } from 'zod';
 import { superValidate } from 'sveltekit-superforms/server';
 import { fail, redirect } from '@sveltejs/kit';
+import { grpcSafe, type Safe } from '$lib/safe';
+import type { Paste__Output } from '$lib/proto/proto/Paste';
+import { Metadata } from '@grpc/grpc-js';
+import { server } from '$lib/server/grpc';
+import type { PasteRequest } from '$lib/proto/proto/PasteRequest';
 
 const schema = z.object({
 	content: z.string(),
@@ -19,12 +24,6 @@ export const load: PageServerLoad = async () => {
 };
 
 
-type Response = {
-	expiration: string;
-	uuid: string;
-};
-
-
 export const actions: Actions = {
 	default: async ({ request }) => {
 		const form = await superValidate(request, schema);
@@ -33,19 +32,24 @@ export const actions: Actions = {
 			return fail(400, { form });
 		}
 
-		const response = await fetch('http://localhost:8080/v1/paste', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(form.data)
+		const paste: PasteRequest = {
+			content: form.data.content,
+			encrypted: form.data.encrypted,
+			expiration: form.data.expiration
+		};
+
+		const req: Safe<Paste__Output> = await new Promise((r) => {
+			const metadata = new Metadata();
+			server.CreatePaste(paste, metadata, grpcSafe(r));
 		});
 
-		if (!response.ok) {
-			return fail(500, { form });
+		if (req.error) {
+			if (req.fields) {
+				return fail(400, { form: { ...form, errors: req.fields } });
+			}
+			return fail(500, { message: req.msg });
 		}
 
-		const json = await response.json() as Response;
-		return redirect(303, `/p/${json.uuid}`);
+		return redirect(303, `/p/${req.data.id}`);
 	}
 };

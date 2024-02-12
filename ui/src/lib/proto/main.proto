@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package proto;
+
+option go_package = "pastevault.com/internal/proto";
+
+import "paste.proto";
+
+message Id {
+  string id = 1;
+}
+
+service Service {
+  rpc GetPasteById(Id) returns (Paste) {}
+  rpc CreatePaste(PasteRequest) returns (Paste) {}
+}
