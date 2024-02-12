@@ -1,7 +1,6 @@
 package paste
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"math/rand"
 	"net/http"
@@ -30,7 +29,6 @@ func GetPasteById(id string) (*pb.Paste, error) {
 	}
 
 	Logger.Info("GetPasteById", "time", time.Since(start))
-	fmt.Println(p)
 	return p, nil
 }
 
