@@ -1,0 +1,28 @@
+# fly.toml app configuration file generated for pastevault2 on 2024-02-16T03:00:12Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'pastevault2'
+primary_region = 'lhr'
+
+[build]
+
+[http_service]
+  internal_port = 8080
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ['app']
+
+[[services]]
+  internal_port = 8081
+  protocol = "tcp"
+
+  [[services.ports]]
+    handlers = ["tls"]
+    tls_options = {"alpn"=["h2"]}
+    port = "8081"
+
+[[vm]]
+  size = 'shared-cpu-1x'
