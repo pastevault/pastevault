@@ -1,7 +1,7 @@
 import protoLoader from '@grpc/proto-loader';
 import { loadPackageDefinition, credentials } from '@grpc/grpc-js';
 import type { ProtoGrpcType } from '$lib/proto/main';
-import { ENV, SERVER_GRPC } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 
 export const packageDefinition = protoLoader.loadSync(
 	'./src/lib/proto/main.proto',
@@ -18,8 +18,8 @@ export const packageDefinition = protoLoader.loadSync(
 const proto = loadPackageDefinition(packageDefinition) as unknown as ProtoGrpcType;
 
 const cr =
-	ENV === "production"
+	env.ENV === "production"
 		? credentials.createSsl()
 		: credentials.createInsecure();
 
-export const server =  new proto.proto.PasteService(SERVER_GRPC, cr);
+export const server =  new proto.proto.PasteService(env.SERVER_GRPC, cr);
