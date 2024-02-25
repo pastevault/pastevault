@@ -1,7 +1,7 @@
 import protoLoader from '@grpc/proto-loader';
 import { loadPackageDefinition, credentials } from '@grpc/grpc-js';
 import type { ProtoGrpcType } from '$lib/proto/main';
-import { ENV, SERVER_GRPC } from "$env/dynamic/private";
+import { ENV, SERVER_GRPC } from "$env/static/private";
 
 export const packageDefinition = protoLoader.loadSync(
 	'./src/lib/proto/main.proto',
