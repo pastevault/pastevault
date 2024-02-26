@@ -20,7 +20,7 @@ jobs:
     steps:
         - uses: actions/checkout@v3
         - uses: superfly/flyctl-actions/setup-flyctl@master
-        - run: cd ui && flyctl deploy --remote-only
+        - run: cd ui && echo "ENV=${ENV}" >> .env && echo "SERVER_GRPC=${SERVER_GRPC}" >> .env && flyctl deploy --remote-only
           env:
             FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN_UI }}
             ENV: production
